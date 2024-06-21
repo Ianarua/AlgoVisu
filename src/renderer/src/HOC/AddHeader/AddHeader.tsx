@@ -3,11 +3,10 @@ import styles from './style.module.less';
 import Header from '../../components/Header';
 
 interface IProps {
-    children: ReactNode[];
+    children: ReactNode[] | ReactNode;
 }
 
 const AddHeader: FC<IProps> = (props) => {
-    console.log(123);
     return (
         <div className={ styles.content }>
             <Header/>

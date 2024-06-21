@@ -15,7 +15,6 @@ try {
 } catch (error) {
     console.error(error);
 }
-abcdefghijklmnopqrstuvwxyz;
 // } else {
 //     // @ts-ignore (define in dts)
 //     window.electron = electronAPI;

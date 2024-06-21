@@ -26,6 +26,7 @@
     "@electron-toolkit/utils": "^3.0.0",
     "antd": "^5.18.3",
     "echarts": "^5.5.0",
+    "echarts-for-react": "^3.0.2",
     "electron-updater": "^6.1.7",
     "less": "^4.2.0",
     "less-loader": "^12.2.0",
