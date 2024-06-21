@@ -11,10 +11,11 @@ const api = {};
 try {
     contextBridge.exposeInMainWorld('electron', electronAPI);
     contextBridge.exposeInMainWorld('api', api);
-    contextBridge.exposeInMainWorld('about', ['lhk', 'zfh', 'mjw', 'xmf']);
+    contextBridge.exposeInMainWorld('about', ['李浩坤', '马敬雯', '邢梦芬', '张峰豪']);
 } catch (error) {
     console.error(error);
 }
+abcdefghijklmnopqrstuvwxyz;
 // } else {
 //     // @ts-ignore (define in dts)
 //     window.electron = electronAPI;

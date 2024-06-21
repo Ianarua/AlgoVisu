@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, Fragment } from 'react';
 import electronLogo from '@resources/icon.png';
 import About from '../../components/About';
 import { Button, ConfigProvider } from 'antd';
@@ -51,7 +51,7 @@ const Index: FC<IProps> = () => {
                 {/*    </a>*/ }
                 {/*</div>*/ }
             </div>
-            <About></About>
+            <About/>
         </>
     );
 };
