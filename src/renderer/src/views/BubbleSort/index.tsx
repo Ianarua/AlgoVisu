@@ -16,6 +16,10 @@ const BubbleSort: FC<IProps> = () => {
     const [inputValue, setInputValue] = useState<string>('');
     const [array, setArray] = useState<number[]>([]);
     const [option, setOption] = useState({
+        title: {
+            text: '冒泡排序',
+            left: 'center'
+        },
         xAxis: {
             type: 'category',
             data: array
@@ -25,6 +29,8 @@ const BubbleSort: FC<IProps> = () => {
         },
         series: [
             {
+                animationDurationUpdate: 1000,
+                animationEasingUpdate: 'quinticInOut',
                 data: array,
                 type: 'bar',
             },
@@ -84,6 +90,10 @@ const BubbleSort: FC<IProps> = () => {
     // 更新图表并延迟
     async function updateChart (arr: number[]) {
         setOption({
+            title: {
+                text: '冒泡排序',
+                left: 'center'
+            },
             xAxis: {
                 type: 'category',
                 data: arr
@@ -93,6 +103,8 @@ const BubbleSort: FC<IProps> = () => {
             },
             series: [
                 {
+                    animationDurationUpdate: 1000,
+                    animationEasingUpdate: 'quinticInOut',
                     data: arr,
                     type: 'bar',
                 },
