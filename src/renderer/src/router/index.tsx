@@ -2,7 +2,7 @@ import { RouteObject } from 'react-router-dom';
 import Home from '@/views/Home';
 import Main from '@/views/Main';
 import MST from '../views/MST';
-import QuickSort from '../views/QuickSort';
+import BubbleSort from '../views/BubbleSort';
 import GraphColor from '../views/GraphColor';
 import HanoiTower from '../views/HanoiTower';
 
@@ -21,8 +21,8 @@ const routes: RouteObject[] = [
         element: <MST/>
     },
     {
-        path: '/quicksort',
-        element: <QuickSort/>
+        path: '/bubbleSort',
+        element: <BubbleSort/>
     },
     {
         path: '/graphcolor',

@@ -5,10 +5,10 @@ import { Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
 interface IProps {
-
+    title: string;
 }
 
-const Header: FC<IProps> = () => {
+const Header: FC<IProps> = (props) => {
     const navigate = useNavigate();
     return (
         <div className={ styles.content }>
@@ -20,6 +20,7 @@ const Header: FC<IProps> = () => {
             >
                 返回选择算法
             </Button>
+            <span className={ styles.title }>{ props.title } 算法演示</span>
         </div>
     );
 };

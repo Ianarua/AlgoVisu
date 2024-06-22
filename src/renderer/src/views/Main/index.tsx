@@ -3,6 +3,7 @@ import { FC } from 'react';
 import styles from './style.module.less';
 import { Image } from 'antd';
 import mst from '@/assets/mst.gif';
+import sorting from '@/assets/sorting.gif'
 import { useNavigate } from 'react-router-dom';
 
 interface IProps {
@@ -15,9 +16,9 @@ const Main: FC<IProps> = () => {
         <div className={ styles.content }>
             {/*<Header/>*/ }
             <div className={ styles.inner }>
-                <div className={ styles.algos } onClick={ () => navigate('/quicksort') }>
-                    <Image preview={ false } src={ mst } width="100%"/>
-                    <span className={ styles.title }>快速排序</span>
+                <div className={ styles.algos } onClick={ () => navigate('/bubbleSort') }>
+                    <Image preview={ false } src={ sorting } width="100%"/>
+                    <span className={ styles.title }>冒泡排序</span>
                 </div>
                 <div className={ styles.algos } onClick={ () => navigate('/mst') }>
                     <Image preview={ false } src={ mst } width="100%"/>
