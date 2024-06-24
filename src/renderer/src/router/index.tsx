@@ -3,8 +3,8 @@ import Home from '@/views/Home';
 import Main from '@/views/Main';
 import MST from '../views/MST';
 import BubbleSort from '../views/BubbleSort';
-import GraphColor from '../views/GraphColor';
 import HanoiTower from '../views/HanoiTower';
+import HuffmanTree from '../views/HuffmanTree';
 
 
 const routes: RouteObject[] = [
@@ -25,8 +25,8 @@ const routes: RouteObject[] = [
         element: <BubbleSort/>
     },
     {
-        path: '/graphcolor',
-        element: <GraphColor/>
+        path: '/huffmantree',
+        element: <HuffmanTree/>
     },
     {
         path: '/hanoitower',

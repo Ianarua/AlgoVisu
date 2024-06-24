@@ -24,9 +24,9 @@ const Main: FC<IProps> = () => {
                     <Image preview={ false } src={ mst } width="100%"/>
                     <span className={ styles.title }>最小生成树</span>
                 </div>
-                <div className={ styles.algos } onClick={ () => navigate('/graphcolor') }>
+                <div className={ styles.algos } onClick={ () => navigate('/huffmantree') }>
                     <Image preview={ false } src={ mst } width="100%"/>
-                    <span className={ styles.title }>图的 m 着色问题</span>
+                    <span className={ styles.title }>哈夫曼树的构造</span>
                 </div>
                 <div className={ styles.algos } onClick={ () => navigate('/hanoitower') }>
                     <Image preview={ false } src={ mst } width="100%"/>

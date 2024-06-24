@@ -1,9 +1,12 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import AddHeader from '../../HOC/AddHeader/AddHeader';
 import ReactECharts from 'echarts-for-react';
 import UnionFind from './UnionFind';
 import styles from './style.module.less';
 import classNames from 'classnames';
+import { Button, message } from 'antd';
+
+// import { ReloadOutlined } from '@ant-design/icons';
 
 interface IProps {
 
@@ -23,10 +26,16 @@ interface Link {
 }
 
 type Node = {
-    name: number
+    name: number,
+    x?: number,
+    y?: number,
+    fixed?: boolean
 }
 
 const MST: FC<IProps> = () => {
+    // 是否第一次进入，防重渲染
+    let [isEnd, setIsEnd] = useState(false);
+    let [cnt, setCnt] = useState(0);
     // 响应式
     const [chartSize, setChartSize] = useState<{
         width: number,
@@ -48,16 +57,14 @@ const MST: FC<IProps> = () => {
         // 根据宽度和高度计算节点大小
         return Math.min(width, height) * ratio; // 例如设置为宽度或高度的2%
     };
+
     // 计算总权重
     const [totalWeight, setTotalWeight] = useState<number>(0);
 
-    function computedWeight () {
-        const newTotalWeight = graphData.links.reduce((sum, cur) => sum + cur.weight, 0);
-        setTotalWeight(prevState => {
-            console.log('totalWeight', newTotalWeight);
-            return newTotalWeight;
-        });
-    }
+    const computedWeight = (links: Link[]) => {
+        const sum = links.reduce((sum, cur) => sum + cur.weight, 0);
+        setTotalWeight(sum);
+    };
 
     // 左侧说明中已连的边
     const [hasEdge, setHasEdge] = useState(0);
@@ -109,93 +116,51 @@ const MST: FC<IProps> = () => {
     // 图表配置项
     const option = {
         title: {
-            text: '无向连通图',
+            text: '最小生成树',
             left: 'center'
         },
         series: [{
             type: 'graph',
-            layout: 'force',
+            // layout: 'force',
             animationDurationUpdate: 1500,
             animationEasingUpdate: 'quinticInOut',
             data: graphData.nodes.map(node => ({
                 name: node.name,
-                symbolSize: getNodeSize(chartSize.width, chartSize.height, 0.05), // 响应式节点大小
-                label: {
-                    show: true,
-                    fontSize: getNodeSize(chartSize.width, chartSize.height, 0.03), // 响应式节点字体大小
-                }
+                x: node.x, // 添加x坐标
+                y: node.y, // 添加y坐标
+                fixed: true, // 固定节点
+                symbolSize: getNodeSize(chartSize.width, chartSize.height, 0.05),
+                label: { show: true, fontSize: getNodeSize(chartSize.width, chartSize.height, 0.03) }
             })),
             links: graphData.links?.map(link => ({
                 source: link.source,
                 target: link.target,
                 label: {
                     show: true,
-                    // @ts-ignore
-                    formatter: () => {
-                        return link.weight;
-                    },
+                    formatter: () => link.weight,
                     fontStyle: 'oblique',
-                    fontSize: getNodeSize(chartSize.width, chartSize.height, 0.02), // 响应式权重字体大小
+                    fontSize: getNodeSize(chartSize.width, chartSize.height, 0.02)
                 }
             })),
             roam: true,     // 是否可互动
             focusNodeAdjacency: true,   // 是否在鼠标移到节点上的时候突出显示节点以及节点的边和邻接节点。[ default: false ]
-            force: {
-                repulsion: getNodeSize(chartSize.width, chartSize.height, 2), // 响应式排斥力
-            }
+            // force: {
+            //     repulsion: getNodeSize(chartSize.width, chartSize.height, 2), // 响应式排斥力
+            // }
         }]
     };
 
     // Kruskal 算法实现
-    const kruskal = async (edges: Edge[]): Promise<Edge[]> => {
+    const kruskal = async (edges: Edge[], graphData: any): Promise<Edge[]> => {
+        console.log('edgesss', edges);
         const nodes = graphData.nodes.length;
-        // 按照权值由小到大排列
-        // const newGraphData = graphData.links.sort((a, b) => a.weight - b.weight);
-        // setGraphData(prevState => {
-        //     return { ...prevState, ...newGraphData };
-        // });
         edges.sort((a, b) => a.weight - b.weight);
         const uf = new UnionFind(nodes);
         const result: Edge[] = [];
 
-        // for (let edge of edges) {
-        //     if (hasEdge === nodes - 1) break; // 边数达到节点数-1时停止
-        //     // 起始节点的根节点
-        //     let rootX = uf.find(edge.from);
-        //     // 目标节点的根节点
-        //     let rootY = uf.find(edge.to);
-        //
-        //     // 先连起来，如果闭合的话再删除刚刚连的线
-        //     // 修改存在/不存在
-        //     rootX !== rootY && setIsActiveExist(0);
-        //     await delay();
-        //     // 连接两条边
-        //     uf.union(edge.from, edge.to);
-        //     // 将结果加入到result中
-        //     result.push(edge);
-        //     // 将result变为 图需要的格式
-        //     const newLink: Link[] = edgesToLink(result);
-        //     // 加了一条边
-        //     setHasEdge(prevState => prevState + 1);
-        //     // 更新视图
-        //     updateChart(newLink);
-        //
-        //     // 形成环了，删除
-        //     if (rootX === rootY) {
-        //         setIsActiveExist(1);
-        //         await delay();
-        //         uf.disconnect(edge.from, edge.to);
-        //         result.pop();
-        //         const newLink = edgesToLink(result);
-        //         setHasEdge(prevState => prevState - 1);
-        //         // 更新视图
-        //         updateChart(newLink);
-        //     }
-        //     setIsActiveExist(null);
-        //     await delay();
-        // }
         for (let edge of edges) {
             console.log('---edge', edge);
+            console.log('---jasEdge', hasEdge, nodes);
             if (hasEdge === nodes - 1) break; // 边数达到节点数-1时停止
 
             let rootX = uf.find(edge.from);
@@ -203,7 +168,6 @@ const MST: FC<IProps> = () => {
 
             // 如果两条边的根节点不同，则说明没有形成环，可以连接
             if (rootX !== rootY) {
-                await delay();
                 setIsActiveExist(0);
                 uf.union(edge.from, edge.to);
                 result.push(edge);
@@ -212,19 +176,24 @@ const MST: FC<IProps> = () => {
                 setHasEdge(prevState => prevState + 1);
                 updateChart(newLink);
 
-                await delay();
-                setIsActiveExist(null);
             } else {
-                setIsActiveExist(0);
-                await delay();
-                setIsActiveExist(null);
+                setIsActiveExist(1);
             }
+            await delay();
         }
+        await delay();
+        setIsActiveExist(null);
         console.log(result);
         // 计算最终权值
-        computedWeight();
+        computedWeight(edgesToLink(result));
+        // isEnd = true;
+        setIsEnd(true);
         return result;
     };
+
+    useEffect(() => {
+        console.log('isde', isEnd);
+    }, [isEnd]);
 
     // 将用户输入转化为echarts格式
     // function transformData (edges: Edge[], nodes: number) {
@@ -236,12 +205,21 @@ const MST: FC<IProps> = () => {
         const nodes = edgesToNodeNames(edges);
         // 转化完后初始化图表
         setGraphData(prevState => {
-            const newState = { ...prevState };
-            newState.nodes = nodes;
+            const newState = {
+                ...prevState,
+                nodes: nodes
+            };
+            !(async function () {
+                await delay();
+                // 开始Kruskal算法
+                await kruskal(edges, newState);
+            })();
             return newState;
         });
-        // 开始Kruskal算法
-        await kruskal(edges);
+
+        // await delay();
+        // // 开始Kruskal算法
+        // await kruskal(edges);
         // // 计算最终权值
         // computedWeight();
     }
@@ -251,24 +229,38 @@ const MST: FC<IProps> = () => {
         // 重置左侧说明 已连的边
         setHasEdge(0);
         // 重置左侧说明 存在/不存在
-        setIsActiveExist(9);
+        setIsActiveExist(null);
         // 重置最后结果的权重
         setTotalWeight(0);
+        // 重置图数据
+        setGraphData({
+            nodes: [],
+            links: []
+        });
     }
 
+    // useEffect(() => {
+    //     init();
+    //     // TODO 模拟开始
+    //     start().then();
+    // }, []);
     useEffect(() => {
+        // if (isFirst.current) {
+        // isFirst.current = false;
+        console.log('start');
         init();
-        // TODO 模拟开始
         start().then();
-    }, []);
+        // 重置是否结束
+        // isEnd = false;
+        setIsEnd(false);
+        // }
+    }, [cnt]);
 
-    // 更新视图
     function updateChart (newLinks: Link[]) {
-        setGraphData(prevState => {
-            const newState = { ...prevState };
-            newState.links = newLinks;
-            return newState;
-        });
+        setGraphData(prevState => ({
+            nodes: [...prevState.nodes],
+            links: [...newLinks],
+        }));
     }
 
     // 延迟函数
@@ -292,15 +284,43 @@ const MST: FC<IProps> = () => {
             nodeSet.add(item.from);
             nodeSet.add(item.to);
         });
-        return Array.from(nodeSet).map(item => ({ name: item }));
+        // 添加节点的x，y坐标以及固定属性
+        return Array.from(nodeSet).map((item, index) => ({
+            name: item,
+            x: (index % 3) * 300, // 示例固定x坐标，可以根据需要调整
+            y: Math.floor(index / 3) * 300, // 示例固定y坐标，可以根据需要调整
+            fixed: true // 固定节点
+        }));
+    }
+
+    // 重新开始
+    const [messageApi, contextHolder] = message.useMessage();
+
+    function reload () {
+        console.log(isEnd);
+        if (!isEnd) {
+            // 提示框
+            messageApi.error('还未结束，请等待演示结束！').then();
+        } else {
+            setCnt(prevState => prevState + 1);
+        }
     }
 
     return (
         <>
+            { contextHolder }
             <AddHeader title="MST">
                 <div className={ styles.echarts }>
                     <div className={ styles.leftExplainTop }>
-                        已连的边：<span style={ { color: 'red', fontSize: 16, textAlign: 'center' } }>{ hasEdge }</span>
+                        <span>已连的边：<span style={ { color: 'red', fontSize: 16, textAlign: 'center' } }>{ hasEdge }</span></span>
+                        {/*<Button>点击设置节点信息</Button>*/ }
+                        {/*<Button*/ }
+                        {/*    icon={ <ReloadOutlined/> }*/ }
+                        {/*    className={ styles.reloadBtn }*/ }
+                        {/*    onClick={ () => reload() }*/ }
+                        {/*>*/ }
+                        {/*    重新演示*/ }
+                        {/*</Button>*/ }
                     </div>
                     <ReactECharts option={ option } style={ { width: '100%', flex: 1 } }/>
                     <div className={ styles.leftExplainBottom }>
