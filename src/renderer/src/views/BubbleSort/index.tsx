@@ -13,7 +13,7 @@ const BubbleSort: FC<IProps> = () => {
     // 提示框
     const [messageApi, contextHolder] = message.useMessage();
 
-    const [inputValue, setInputValue] = useState<string>('');
+    const [inputValue, setInputValue] = useState<string>('2,55,7,94,12');
     const [array, setArray] = useState<number[]>([]);
     const [option, setOption] = useState({
         title: {
@@ -51,14 +51,16 @@ const BubbleSort: FC<IProps> = () => {
 
     const handleChange = (e: any) => {
         const value = e.target.value;
-        setInputValue('[' + value + ']');
+        setInputValue(value);
+        // setInputValue('[' + value + ']');
     };
 
     const handleSubmit = async () => {
         try {
             // 尝试解析输入的字符串
             console.log(inputValue);
-            const parsedArray = JSON.parse(inputValue);
+            const tempValue = '[' + inputValue + ']';
+            const parsedArray = JSON.parse(tempValue);
             // 检查解析后的结果是否为数组
             if (Array.isArray(parsedArray) && parsedArray.every(item => !Array.isArray(item))) {
                 setArray([...parsedArray]);
@@ -121,7 +123,7 @@ const BubbleSort: FC<IProps> = () => {
     return (
         <>
             { contextHolder }
-            <AddHeader title="快速排序">
+            <AddHeader title="冒泡排序">
                 <ReactECharts option={ option }/>
                 <Button
                     icon={ <ReloadOutlined/> }
@@ -133,6 +135,7 @@ const BubbleSort: FC<IProps> = () => {
                 <div className={ styles.input }>
                     <Input
                         placeholder="输入以','分割的数字"
+                        value={ inputValue }
                         onChange={ handleChange }
                     />
                     <Button type="primary" onClick={ handleSubmit }>Submit</Button>
