@@ -3,6 +3,9 @@ import styles from './style.module.less';
 import AddHeader from '../../HOC/AddHeader/AddHeader';
 import ReactECharts from 'echarts-for-react';
 import HuffmanNode from './HuffmanNode';
+import { Button, Input, message } from 'antd';
+
+// import { ReloadOutlined } from '@ant-design/icons';
 
 interface IProps {
 
@@ -25,6 +28,9 @@ type Node = {
 }
 
 const HuffmanTree: FC<IProps> = () => {
+    // 提示框
+    const [messageApi, contextHolder] = message.useMessage();
+
     // 响应式
     const [chartSize, setChartSize] = useState<{
         width: number,
@@ -47,6 +53,9 @@ const HuffmanTree: FC<IProps> = () => {
         return Math.min(width, height) * ratio; // 例如设置为宽度或高度的2%
     };
 
+    // 是否演示完成
+    let [isFinish, setIsFinish] = useState(false);
+
     // 图表中的数据
     const [graphData, setGraphData] = useState<{
         nodes: Node[],
@@ -62,16 +71,16 @@ const HuffmanTree: FC<IProps> = () => {
             text: '哈夫曼树',
             left: 'center'
         },
-        tooltip: {
-            show: true,
-            trigger: 'item',
-            formatter: (params: any) => {
-                if (params.dataType === 'node') {
-                    return params.data.name.toString();
-                }
-                return '';
-            }
-        },
+        // tooltip: {
+        //     show: true,
+        //     trigger: 'item',
+        //     formatter: (params: any) => {
+        //         if (params.dataType === 'node') {
+        //             return params.data.name.toString();
+        //         }
+        //         return '';
+        //     }
+        // },
         series: [{
             type: 'graph',
             // layout: 'force',
@@ -92,32 +101,17 @@ const HuffmanTree: FC<IProps> = () => {
                     fontSize: getNodeSize(chartSize.width, chartSize.height, 0.02)
                 }
             })),
-            // links: graphData.links?.map(link => ({
-            //     source: link.source,
-            //     target: link.target,
-            // })),
-            links: graphData.links.map(link => {
-                console.log('link', link);
-                return {
-                    source: link.source.toString(),
-                    target: link.target.toString(),
-                };
-                // return { source: '0', target: 2 };
-            }),
+            links: graphData.links?.map(link => ({
+                source: link.source.toString(),
+                target: link.target.toString(),
+            })),
             // roam: true,     // 是否可互动
             focusNodeAdjacency: true,   // 是否在鼠标移到节点上的时候突出显示节点以及节点的边和邻接节点。[ default: false ]
-            // force: {
-            //     repulsion: getNodeSize(chartSize.width, chartSize.height, 2), // 响应式排斥力
-            // }
         }]
     };
 
-    // TODO 模拟的数据
-    const huffmanData = [1, 3, 5, 7, 9, 11];
-    // // 图的宽度
-    // let width = 0;
-    // // 图的深度
-    // let depth = 0;
+    // 权重数据数据
+    const [huffmanData, setHuffmanData] = useState([1, 3, 5, 7, 9, 11]);
 
     // 构造哈夫曼树
     function buildHuffmanTree (weights: number[]): HuffmanNode {
@@ -210,15 +204,24 @@ const HuffmanTree: FC<IProps> = () => {
 
         // 更新图表数据
         setGraphData({ nodes, links });
+        setIsFinish(true);
         return { nodes, links };
     }
 
-    // function edgesToLink (edges: Edge[]) {
-    //
-    // }
+    function init () {
+        openNotification('开始绘制', 1);
+        // 修改是否完成状态
+        setIsFinish(false);
+        // 重置图标数据
+        setGraphData({
+            nodes: [],
+            links: []
+        });
+    }
 
-
+    let [cnt, setCnt] = useState(0);
     useEffect(() => {
+        init();
         // 构造哈夫曼树
         const huffmanTree = buildHuffmanTree(huffmanData);
         console.log(huffmanTree);
@@ -226,35 +229,80 @@ const HuffmanTree: FC<IProps> = () => {
         const treeInfo = calculateWidthAndDepth(huffmanTree);
         const depth = treeInfo.depth;
         const width = 2 ** depth;
+        // 画图
         traverseTree(huffmanTree, 1, 0, width).then(); // 从1开始遍历，调整树的垂直位置
-
-        // traverseTree(huffmanTree, 0, 0, width);
-        // 遍历哈夫曼树并生成图表数据
-        // const newGraphData = traverseTree(huffmanTree, 0, 0, width);
-        // setGraphData(newGraphData);
 
         // 退出后
         return () => {
             // 重置id
             HuffmanNode.resetIdCounter();
         };
-    }, []);
+    }, [cnt]);
 
     // 延迟函数
     function delay (time: number = 1500) {
         return new Promise(resolve => setTimeout(resolve, time));
     }
 
-    // function inputChange
+    const [inputValue, setInputValue] = useState<string>(huffmanData.toString());
+
+    const handleChange = (e: any) => {
+        const value = e.target.value;
+        setInputValue(value);
+        // setInputValue('[' + value + ']');
+    };
+
+    // 提示函数
+    const openNotification = (message: string, type: number = 0) => {
+        type === 0 && messageApi.error(message);
+        type === 1 && messageApi.success(message);
+    };
+
+    const handleSubmit = async () => {
+        console.log('finish', isFinish);
+        if (isFinish) {
+            try {
+                // 尝试解析输入的字符串
+                console.log(inputValue);
+                const tempValue = '[' + inputValue + ']';
+                const parsedArray = JSON.parse(tempValue);
+                // 检查解析后的结果是否为数组
+                if (Array.isArray(parsedArray) && parsedArray.every(item => !Array.isArray(item))) {
+                    setHuffmanData([...parsedArray]);
+                    setCnt(prevState => prevState + 1);
+                } else {
+                    openNotification('格式错误！请输入以\',\'分隔的数字');
+                }
+            } catch (e) {
+                openNotification('格式错误！请输入以\',\'分隔的数字');
+            }
+        } else {
+            openNotification('请等待演示完成');
+        }
+    };
 
     return (
         <>
+            { contextHolder }
             <AddHeader title="哈夫曼树的构造">
                 <div className={ styles.echarts }>
                     <ReactECharts option={ option } style={ { width: '100%', height: '100%' } }/>
                 </div>
-                <div>
-
+                {/*<Button*/ }
+                {/*    icon={ <ReloadOutlined/> }*/ }
+                {/*    className={ styles.reloadBtn }*/ }
+                {/*    onClick={ () => handleSubmit() }*/ }
+                {/*>*/ }
+                {/*    重新演示*/ }
+                {/*</Button>*/ }
+                权重：
+                <div className={ styles.input }>
+                    <Input
+                        placeholder="输入以','分割的数字"
+                        value={ inputValue }
+                        onChange={ handleChange }
+                    />
+                    <Button type="primary" onClick={ handleSubmit }>Submit</Button>
                 </div>
             </AddHeader>
         </>

@@ -1,35 +1,38 @@
-# algovisu
+# AlgoVisu
 
 算法可视化系统
 An Electron application with React and TypeScript
 
-## Recommended IDE Setup
-
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+* 冒泡排序
+* MST (Kruskal)
+* 哈夫曼树
+* 汉诺塔
 
 ## Project Setup
 
-### Install
+**确保有node环境**
+
+### 下载依赖
 
 ```bash
-pnpm install
+npm install
 ```
 
-### Development
+### 启动应用程序
 
 ```bash
-pnpm dev
+npm dev
 ```
 
-### Build
+### 构建
 
 ```bash
 # For windows
-pnpm build:win
+npm build:win
 
 # For macOS
-pnpm build:mac
+npm build:mac
 
 # For Linux
-pnpm build:linux
+npm build:linux
 ```
