@@ -1,12 +1,11 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import AddHeader from '../../HOC/AddHeader/AddHeader';
 import ReactECharts from 'echarts-for-react';
 import UnionFind from './UnionFind';
 import styles from './style.module.less';
 import classNames from 'classnames';
 import { Button, message } from 'antd';
-
-// import { ReloadOutlined } from '@ant-design/icons';
+import { ReloadOutlined } from '@ant-design/icons';
 
 interface IProps {
 
@@ -306,6 +305,25 @@ const MST: FC<IProps> = () => {
         }
     }
 
+    // 用户输入相关配置
+    const formItemLayout = {
+        labelCol: {
+            xs: { span: 24 },
+            sm: { span: 4 },
+        },
+        wrapperCol: {
+            xs: { span: 24 },
+            sm: { span: 20 },
+        },
+    };
+
+    const formItemLayoutWithOutLabel = {
+        wrapperCol: {
+            xs: { span: 24, offset: 0 },
+            sm: { span: 20, offset: 4 },
+        },
+    };
+
     return (
         <>
             { contextHolder }
@@ -313,14 +331,14 @@ const MST: FC<IProps> = () => {
                 <div className={ styles.echarts }>
                     <div className={ styles.leftExplainTop }>
                         <span>已连的边：<span style={ { color: 'red', fontSize: 16, textAlign: 'center' } }>{ hasEdge }</span></span>
-                        {/*<Button>点击设置节点信息</Button>*/ }
-                        {/*<Button*/ }
-                        {/*    icon={ <ReloadOutlined/> }*/ }
-                        {/*    className={ styles.reloadBtn }*/ }
-                        {/*    onClick={ () => reload() }*/ }
-                        {/*>*/ }
-                        {/*    重新演示*/ }
-                        {/*</Button>*/ }
+                        <Button>点击设置节点信息</Button>
+                        <Button
+                            icon={ <ReloadOutlined/> }
+                            className={ styles.reloadBtn }
+                            onClick={ () => reload() }
+                        >
+                            重新演示
+                        </Button>
                     </div>
                     <ReactECharts option={ option } style={ { width: '100%', flex: 1 } }/>
                     <div className={ styles.leftExplainBottom }>
@@ -331,7 +349,7 @@ const MST: FC<IProps> = () => {
                         总权重：{ totalWeight }
                     </div>
                 </div>
-                {/*<Button onClick={ handleStartVisualization } type="primary">Start Visualization</Button>*/ }
+                {/*<Button type="primary">Start Visualization</Button>*/ }
                 <div className={ styles.main }>
                     <div className={ styles.explain }>
                         <div className={ styles.edge }>
