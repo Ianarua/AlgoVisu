@@ -11,7 +11,7 @@ const api = {};
 try {
     contextBridge.exposeInMainWorld('electron', electronAPI);
     contextBridge.exposeInMainWorld('api', api);
-    contextBridge.exposeInMainWorld('about', ['李浩坤', '马敬雯', '邢梦芬', '张峰豪']);
+    contextBridge.exposeInMainWorld('about', ['李浩坤', '张峰豪', '马敬雯', '邢梦芬']);
 } catch (error) {
     console.error(error);
 }

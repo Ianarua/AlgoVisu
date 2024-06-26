@@ -18,14 +18,14 @@ const Index: FC<IProps> = () => {
     return (
         <>
             <img alt="logo" className="logo" src={ electronLogo }/>
-            <div className="creator">Powered by electron-vite</div>
+            <div className="creator">Powered by 太原理工大学软件学院</div>
             <div className="text">
-                Build an Electron app with <span className="react">React</span>
-                &nbsp;and <span className="ts">TypeScript</span>
+                算法 <span className="react"></span>
+                &nbsp; <span className="ts">可视化系统</span>
             </div>
-            <p className="tip">
-                Please try pressing <code>F12</code> to open the devTool
-            </p>
+            {/*<p className="tip">*/}
+            {/*    Please try pressing <code>F12</code> to open the devTool*/}
+            {/*</p>*/}
             <div className="actions">
                 <div className="action">
                     <ConfigProvider
