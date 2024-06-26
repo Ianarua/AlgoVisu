@@ -71,6 +71,7 @@ const HanoiTower: FC<IProps> = () => {
         }
         // 更新视图
         changeDisksState(from, to);
+        // 延迟
         await delay();
     }
 
