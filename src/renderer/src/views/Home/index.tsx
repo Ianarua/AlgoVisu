@@ -1,4 +1,4 @@
-import { FC, Fragment } from 'react';
+import { FC } from 'react';
 import electronLogo from '@resources/icon.png';
 import About from '../../components/About';
 import { Button, ConfigProvider } from 'antd';
