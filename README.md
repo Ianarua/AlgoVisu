@@ -21,7 +21,7 @@ npm install
 ### 启动应用程序
 
 ```bash
-npm dev
+npm run dev
 ```
 
 ### 构建
