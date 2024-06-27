@@ -71,16 +71,6 @@ const HuffmanTree: FC<IProps> = () => {
             text: '哈夫曼树',
             left: 'center'
         },
-        // tooltip: {
-        //     show: true,
-        //     trigger: 'item',
-        //     formatter: (params: any) => {
-        //         if (params.dataType === 'node') {
-        //             return params.data.name.toString();
-        //         }
-        //         return '';
-        //     }
-        // },
         series: [{
             type: 'graph',
             // layout: 'force',
@@ -203,6 +193,7 @@ const HuffmanTree: FC<IProps> = () => {
         }
 
         // 更新图表数据
+        console.log('newLog', {nodes, links});
         setGraphData({ nodes, links });
         setIsFinish(true);
         return { nodes, links };
@@ -249,7 +240,6 @@ const HuffmanTree: FC<IProps> = () => {
     const handleChange = (e: any) => {
         const value = e.target.value;
         setInputValue(value);
-        // setInputValue('[' + value + ']');
     };
 
     // 提示函数
@@ -288,13 +278,6 @@ const HuffmanTree: FC<IProps> = () => {
                 <div className={ styles.echarts }>
                     <ReactECharts option={ option } style={ { width: '100%', height: '100%' } }/>
                 </div>
-                {/*<Button*/ }
-                {/*    icon={ <ReloadOutlined/> }*/ }
-                {/*    className={ styles.reloadBtn }*/ }
-                {/*    onClick={ () => handleSubmit() }*/ }
-                {/*>*/ }
-                {/*    重新演示*/ }
-                {/*</Button>*/ }
                 权重：
                 <div className={ styles.input }>
                     <Input

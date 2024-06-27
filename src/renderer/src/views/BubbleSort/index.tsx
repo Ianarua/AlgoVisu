@@ -3,8 +3,6 @@ import styles from './style.module.less';
 import AddHeader from '../../HOC/AddHeader/AddHeader';
 import ReactECharts from 'echarts-for-react';
 import { Button, Input, message } from 'antd';
-// import { ReloadOutlined } from '@ant-design/icons';
-
 interface IProps {
 }
 
@@ -52,7 +50,6 @@ const BubbleSort: FC<IProps> = () => {
     const handleChange = (e: any) => {
         const value = e.target.value;
         setInputValue(value);
-        // setInputValue('[' + value + ']');
     };
 
     const handleSubmit = async () => {
@@ -127,13 +124,6 @@ const BubbleSort: FC<IProps> = () => {
                 <div style={ { width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' } }>
                     <ReactECharts option={ option } style={{width: '100%'}}/>
                 </div>
-                {/*<Button*/}
-                {/*    icon={ <ReloadOutlined/> }*/}
-                {/*    className={ styles.reloadBtn }*/}
-                {/*    onClick={ () => handleSubmit() }*/}
-                {/*>*/}
-                {/*    重新演示*/}
-                {/*</Button>*/}
                 <div className={ styles.input }>
                     <Input
                         placeholder="输入以','分割的数字"

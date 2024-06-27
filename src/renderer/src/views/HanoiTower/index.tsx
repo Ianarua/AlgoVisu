@@ -23,8 +23,6 @@ const HanoiTower: FC<IProps> = () => {
         messageApi.error('请输入数字！').then();
     };
 
-    // let [isFinish, setIsFinish] = useState(false);
-
     let [inputValue, setInputValue] = useState(1);
 
     let [cnt, setCnt] = useState(0);

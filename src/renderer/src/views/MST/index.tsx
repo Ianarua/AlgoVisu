@@ -4,8 +4,6 @@ import ReactECharts from 'echarts-for-react';
 import UnionFind from './UnionFind';
 import styles from './style.module.less';
 import classNames from 'classnames';
-// import { Button, message, Modal, Form, Input, Space } from 'antd';
-// import { MinusCircleOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 
 interface IProps {
 
@@ -18,10 +16,16 @@ interface Edge {
     weight: number; // 边的权重
 }
 
+type LineStyle = {
+    color: string,
+    width: number,
+}
+
 interface Link {
     source: number,
     target: number,
-    weight: number
+    weight: number,
+    lineStyle: LineStyle
 }
 
 type Node = {
@@ -32,9 +36,7 @@ type Node = {
 }
 
 const MST: FC<IProps> = () => {
-    // // 是否第一次进入，防重渲染
-    // let [isEnd, setIsEnd] = useState(false);
-    // let [cnt, setCnt] = useState(0);
+    const LINECOLOR = '#da1212';
     // 响应式
     const [chartSize, setChartSize] = useState<{
         width: number,
@@ -95,27 +97,8 @@ const MST: FC<IProps> = () => {
         links: []
     });
 
-    // // 用户输入的数据 Edge[]
-    // const [edges, setEdges] = useState<Edge[]>([
-    //     { from: 0, to: 1, weight: 4 },
-    //     { from: 1, to: 2, weight: 8 },
-    //     { from: 2, to: 3, weight: 7 },
-    //     { from: 3, to: 4, weight: 9 },
-    //     { from: 4, to: 5, weight: 10 },
-    //     { from: 5, to: 6, weight: 2 },
-    //     { from: 6, to: 7, weight: 1 },
-    //     { from: 0, to: 7, weight: 8 },
-    //     { from: 1, to: 7, weight: 11 },
-    //     { from: 7, to: 8, weight: 7 },
-    //     { from: 2, to: 8, weight: 2 },
-    //     { from: 6, to: 8, weight: 6 },
-    //     { from: 2, to: 5, weight: 4 },
-    // ]);
-    // 用户输入的数据 Edge[]
-    // const [edges, setEdges] = useState<Edge[]>();
-
     // 随机节点边
-    function generateRandomEdges (maxNodes = 7, maxEdges = 10) {
+    function generateRandomEdges (maxNodes = 5, maxEdges = 7) {
         const edges: Edge[] = [];
         const nodeSet = new Set();
 
@@ -134,7 +117,6 @@ const MST: FC<IProps> = () => {
                 nodeSet.add(`${ from }-${ to }`);
             }
         }
-
         return edges;
     }
 
@@ -157,21 +139,25 @@ const MST: FC<IProps> = () => {
                 symbolSize: getNodeSize(chartSize.width, chartSize.height, 0.05),
                 label: { show: true, fontSize: getNodeSize(chartSize.width, chartSize.height, 0.03) }
             })),
-            links: graphData.links?.map(link => ({
-                source: link.source,
-                target: link.target,
-                label: {
-                    show: true,
-                    formatter: () => link.weight,
-                    fontStyle: 'oblique',
-                    fontSize: getNodeSize(chartSize.width, chartSize.height, 0.02)
-                }
-            })),
+            links: graphData.links.map(link => {
+                const newLink = {
+                    source: link.source.toString(),
+                    target: link.target.toString(),
+                    lineStyle: {
+                        color: link?.lineStyle?.color
+                    },
+                    label: {
+                        show: true,
+                        formatter: () => link.weight,
+                        fontStyle: 'oblique',
+                        fontSize: getNodeSize(chartSize.width, chartSize.height, 0.02)
+                    }
+                };
+                console.log('newLinke', newLink);
+                return newLink;
+            }),
             roam: true,     // 是否可互动
             focusNodeAdjacency: true,   // 是否在鼠标移到节点上的时候突出显示节点以及节点的边和邻接节点。[ default: false ]
-            // force: {
-            //     repulsion: getNodeSize(chartSize.width, chartSize.height, 2), // 响应式排斥力
-            // }
         }]
     };
 
@@ -208,19 +194,8 @@ const MST: FC<IProps> = () => {
         console.log(result);
         // 计算最终权值
         computedWeight(edgesToLink(result));
-        // isEnd = true;
-        // setIsEnd(true);
         return result;
     };
-
-    // useEffect(() => {
-    //     console.log('isde', isEnd);
-    // }, [isEnd]);
-
-    // 将用户输入转化为echarts格式
-    // function transformData (edges: Edge[], nodes: number) {
-    //
-    // }
 
     async function start (edges: Edge[]) {
         // 将edges转化为 node名称数组
@@ -239,19 +214,11 @@ const MST: FC<IProps> = () => {
             !(async function () {
                 // 等待一段时间后清空连接
                 await delay(2500);
-                updateChart([]);
-
                 // 开始Kruskal算法
                 await kruskal(edges, newState);
             })();
             return newState;
         });
-
-        // await delay();
-        // // 开始Kruskal算法
-        // await kruskal(edges);
-        // // 计算最终权值
-        // computedWeight();
     }
 
     function init () {
@@ -273,23 +240,36 @@ const MST: FC<IProps> = () => {
         !(async function () {
             // 生成随机边数据
             const randomEdges = generateRandomEdges();
-            // console.log('randomEdges', randomEdges);
-            // setEdges(() => {
-            //     return randomEdges;
-            // });
             await delay(200);
             init();
             await start(randomEdges);
-            // // 重置是否结束
-            // setIsEnd(false);
         })();
     }, []);
 
-    function updateChart (newLinks: Link[]) {
-        setGraphData(prevState => ({
-            nodes: [...prevState.nodes],
-            links: [...newLinks],
-        }));
+    function updateChart (links: Link[]) {
+        setGraphData(prevState => {
+            if (prevState.links.length === 0) {
+                return {
+                    nodes: [...prevState.nodes],
+                    links: [...prevState.links, ...links]
+                };
+            } else {
+                const lastLink = links.at(-1);
+                if (lastLink) {
+                    prevState.links.forEach(item => {
+                        if (item.source === lastLink.source && item.target === lastLink.target) {
+                            item.lineStyle.color = LINECOLOR;
+                        }
+                    });
+                }
+                const newData = {
+                    nodes: [...prevState.nodes],
+                    links: [...prevState.links]
+                };
+                console.log('---------newData', newData);
+                return newData;
+            }
+        });
     }
 
     // 延迟函数
@@ -302,7 +282,11 @@ const MST: FC<IProps> = () => {
         return edges.map(item => ({
             source: item.from,
             target: item.to,
-            weight: item.weight
+            weight: item.weight,
+            lineStyle: {
+                color: '#fff',
+                width: 3
+            }
         }));
     }
 
@@ -326,50 +310,12 @@ const MST: FC<IProps> = () => {
         });
     }
 
-    // // 重新开始
-    // const [messageApi, contextHolder] = message.useMessage();
-
-    // function reload () {
-    //     console.log(isEnd);
-    //     if (!isEnd) {
-    //         // 提示框
-    //         messageApi.error('还未结束，请等待演示结束！').then();
-    //     } else {
-    //         setCnt(prevState => prevState + 1);
-    //     }
-    // }
-    //
-    // // 控制弹窗
-    // const [open, setOpen] = useState(false);
-    //
-    // const showModal = () => {
-    //     setOpen(true);
-    // };
-
-    // 提交
-    // const handleOk = () => {
-    //     setOpen(false);
-    // };
-    //
-    // const handleCancel = () => {
-    //     setOpen(false);
-    // };
-
     return (
         <>
-            {/*{ contextHolder }*/ }
             <AddHeader title="MST">
                 <div className={ styles.echarts }>
                     <div className={ styles.leftExplainTop }>
                         <span>已连的边：<span style={ { color: 'red', fontSize: 16, textAlign: 'center' } }>{ hasEdge }</span></span>
-                        {/*<Button onClick={ () => showModal() }>点击设置节点信息</Button>*/ }
-                        {/*<Button*/ }
-                        {/*    icon={ <ReloadOutlined/> }*/ }
-                        {/*    className={ styles.reloadBtn }*/ }
-                        {/*    onClick={ () => reload() }*/ }
-                        {/*>*/ }
-                        {/*    重新演示*/ }
-                        {/*</Button>*/ }
                     </div>
                     <ReactECharts option={ option } style={ { width: '100%', flex: 1, marginTop: 20 } }/>
                     <div className={ styles.leftExplainBottom }>
@@ -422,55 +368,6 @@ const MST: FC<IProps> = () => {
                         </div>
                     </div>
                 </div>
-                {/*<Modal*/ }
-                {/*    open={ open }*/ }
-                {/*    onCancel={ handleCancel }*/ }
-                {/*    onOk={ handleOk }*/ }
-                {/*    title="编辑节点"*/ }
-                {/*>*/ }
-                {/*    <Form*/ }
-                {/*        name="dynamic_form_nest_item"*/ }
-                {/*        // onFinish={ onFinish }*/ }
-                {/*        style={ { maxWidth: 600 } }*/ }
-                {/*        autoComplete="off"*/ }
-                {/*    >*/ }
-                {/*        <Form.List name="users">*/ }
-                {/*            { (fields, { add, remove }) => (*/ }
-                {/*                <>*/ }
-                {/*                    { fields.map(({ key, name, ...restField }) => (*/ }
-                {/*                        <Space key={ key } style={ { display: 'flex', marginBottom: 8 } } align="baseline">*/ }
-                {/*                            <Form.Item*/ }
-                {/*                                { ...restField }*/ }
-                {/*                                name={ [name, 'first'] }*/ }
-                {/*                                rules={ [{ required: true, message: 'Missing first name' }] }*/ }
-                {/*                            >*/ }
-                {/*                                <Input placeholder="From"/>*/ }
-                {/*                            </Form.Item>*/ }
-                {/*                            <Form.Item*/ }
-                {/*                                { ...restField }*/ }
-                {/*                                name={ [name, 'last'] }*/ }
-                {/*                                rules={ [{ required: true, message: 'Missing last name' }] }*/ }
-                {/*                            >*/ }
-                {/*                                <Input placeholder="To"/>*/ }
-                {/*                            </Form.Item>*/ }
-                {/*                            <MinusCircleOutlined onClick={ () => remove(name) }/>*/ }
-                {/*                        </Space>*/ }
-                {/*                    )) }*/ }
-                {/*                    <Form.Item>*/ }
-                {/*                        <Button type="dashed" onClick={ () => add() } block icon={ <PlusOutlined/> }>*/ }
-                {/*                            Add field*/ }
-                {/*                        </Button>*/ }
-                {/*                    </Form.Item>*/ }
-                {/*                </>*/ }
-                {/*            ) }*/ }
-                {/*        </Form.List>*/ }
-                {/*<Form.Item>*/ }
-                {/*    <Button type="primary" htmlType="submit">*/ }
-                {/*        Submit*/ }
-                {/*    </Button>*/ }
-                {/*</Form.Item>*/ }
-                {/*    </Form>*/ }
-                {/*</Modal>*/ }
             </AddHeader>
         </>
     );

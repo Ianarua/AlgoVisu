@@ -23,9 +23,6 @@ const Index: FC<IProps> = () => {
                 算法 <span className="react"></span>
                 &nbsp; <span className="ts">可视化系统</span>
             </div>
-            {/*<p className="tip">*/}
-            {/*    Please try pressing <code>F12</code> to open the devTool*/}
-            {/*</p>*/}
             <div className="actions">
                 <div className="action">
                     <ConfigProvider
@@ -45,11 +42,6 @@ const Index: FC<IProps> = () => {
                         </Button>
                     </ConfigProvider>
                 </div>
-                {/*<div className="action">*/ }
-                {/*    <a target="_blank" rel="noreferrer" onClick={ ipcHandle }>*/ }
-                {/*        Send IPC*/ }
-                {/*    </a>*/ }
-                {/*</div>*/ }
             </div>
             <About/>
         </>
