@@ -61,8 +61,9 @@ const HanoiTower: FC<IProps> = () => {
         }
     }
 
+    // 移动片片
     async function moveDisk (from: Tower, to: Tower) {
-        if (isNext) return;
+        // if (isNext) return;
         const disk = from.num.pop();
         if (disk !== undefined) {
             to.num.push(disk);

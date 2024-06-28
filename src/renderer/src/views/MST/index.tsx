@@ -67,10 +67,10 @@ const MST: FC<IProps> = () => {
         setTotalWeight(sum);
     };
 
-    // 左侧说明中已连的边
+    // 左侧说明中已连的边在环的classNames, null为默认情况下啥也不红，0为存在红，1为不
     const [hasEdge, setHasEdge] = useState(0);
 
-    // 左侧说明中是否存在环的classNames, null为默认情况下啥也不红，0为存在红，1为不存在红
+    // 左侧说明中是否存存在红
     const [isActiveExist, setIsActiveExist] = useState<number | null>(null); // 初始状态设为 null
 
     // 0 为存在的，1 是不存在的
@@ -266,7 +266,6 @@ const MST: FC<IProps> = () => {
                     nodes: [...prevState.nodes],
                     links: [...prevState.links]
                 };
-                console.log('---------newData', newData);
                 return newData;
             }
         });
